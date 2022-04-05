@@ -181,7 +181,7 @@ const Ticket  = () => {
          {isServerError && !isServerSuccess && !isFetching &&
             <AlertWrapper>
                <Alert type={'error'}>
-                  На сервера произошла ошибка
+                  На сервере произошла ошибка
                </Alert>
             </AlertWrapper>
          }
