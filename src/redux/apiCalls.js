@@ -13,7 +13,7 @@ export const sendToServer = async (dispatch, selectedNumber,  iteration = 0) => 
          dispatch(requestStart())
       }
 
-      await axios.post('rock-block', selectedNumber)
+      await axios.post('/rock-block', selectedNumber)
          .then(res => {
             if (res.status === 200) {
                dispatch(requestSuccess())
