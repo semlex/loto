@@ -78,11 +78,7 @@ const Ticket  = () => {
 
    const dispatch = useDispatch()
 
-   const handleResultClick = async () => {
-      if (!isRaffled) {
-         dispatch(checkTicket())
-      }
-
+   const serverRequest = async () => {
       if (isRaffled && !isFetching) {
          await sendToServer(dispatch, {
             firstField: fields[0].selected,
@@ -92,16 +88,15 @@ const Ticket  = () => {
       }
    }
 
-   useEffect(() => {
-      const serverRequest = async () => {
-         if (isRaffled && !isFetching) {
-            await sendToServer(dispatch, {
-               firstField: fields[0].selected,
-               secondField: fields[1].selected,
-               isTicketWon: isWin
-            })
-         }
+   const handleResultClick = async () => {
+      if (!isRaffled) {
+         dispatch(checkTicket())
       }
+
+      await serverRequest()
+   }
+
+   useEffect(() => {
       serverRequest()
    }, [isRaffled])
 
