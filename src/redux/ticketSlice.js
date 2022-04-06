@@ -37,21 +37,25 @@ const ticketSlice = createSlice({
       isServerError: false,
    },
    reducers: {
+      // Handle click on cell
       cellClick(state, action) {
          const { fieldNum, number } = action.payload
+         const field = state.fields[fieldNum]
 
+         // If ticket is raffled, the user can't change selected numbers
          if (!state.isRaffled) {
-            if (state.fields[fieldNum].selected.includes(number)) {
-               state.fields[fieldNum].selected = state.fields[fieldNum].selected.filter(item => item !== number)
-               state.fields[fieldNum].isError = false
-               state.fields[fieldNum].errorText = ''
-            } else if (state.fields[fieldNum].selected.length < state.fields[fieldNum].maxSelected) {
-               state.fields[fieldNum].selected.push(number)
-               state.fields[fieldNum].isError = false
-               state.fields[fieldNum].errorText = ''
-            } else {
-               state.fields[fieldNum].isError = true
-               const max = state.fields[fieldNum].maxSelected
+            // When the user clicks on a number he has already selected
+            if (field.selected.includes(number)) {
+               field.selected = field.selected.filter(item => item !== number)
+               field.isError = false
+               field.errorText = ''
+            } else if (field.selected.length < field.maxSelected) {
+               field.selected.push(number) // When the user clicks on a number that hasn't been selected
+               field.isError = false
+               field.errorText = ''
+            } else {                  // When the user tries to select number but
+               field.isError = true   // the limit of numbers in field has been reached
+               const max = field.maxSelected
                let errorText = `Можно отметить лишь ${max}`
                if (max === 1) {
                   errorText += ' число.'
@@ -60,11 +64,13 @@ const ticketSlice = createSlice({
                } else {
                   errorText += ' чисел.'
                }
-               state.fields[fieldNum].errorText = errorText
+               field.errorText = errorText
             }
          }
       },
+      // Select random numbers in fields
       fillWithRandoms(state, action) {
+         // If ticket is raffled, user can't change selected numbers
          if (!state.isRaffled) {
             state.fields = state.fields.map(field => {
                field.selected = generateRandoms({
@@ -81,10 +87,12 @@ const ticketSlice = createSlice({
          }
       },
       checkTicket(state, action) {
+         // Check if all fields are filled
          const isFilled = state.fields.every(field => (
             field.selected.length === field.maxSelected
          ))
 
+         // If all fields are filled, check ticket
          if (isFilled) {
             let fullPoints = 0
             state.fields = state.fields.map(field => {
@@ -110,6 +118,7 @@ const ticketSlice = createSlice({
             })
          }
       },
+      // Take another ticket
       retry(state, action) {
          state.number += 1
          state.isRaffled = false
